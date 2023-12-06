@@ -77,19 +77,20 @@ app.post("/users", function (req, res) {
     // kod för att hantera anrop
     let sql = `INSERT INTO users (firstname, lastname)
       VALUES ('${req.body.firstname}', 
-      '${req.body.lastname}',
-      SELECT LAST_INSERT_ID();`;  
-    console.log(sql);
+      '${req.body.lastname}');
+      SELECT LAST_INSERT_ID();`;
+        console.log(sql);
   
     con.query(sql, function (err, result, fields) {
       if (err) throw err;
       // kod för att hantera retur av data
-      console.log(result);
+      // console.log(result);
       let output = {
         id: result[0].insertId,
-        fullname: req.body.fullname,
+        firstname: req.body.firstname,
         lastname: req.body.lastname,
       };
+      console.log(output);
       res.send(output);
     });
   });
