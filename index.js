@@ -61,7 +61,20 @@ app.get("/users/:id", function (req, res) {
   });
 });
 
+app.get("/users/:firstname", function (req, res) {
+  let sql = "SELECT * FROM users WHERE firstname=" + req.params.firstname;
+  console.log(sql);
+  con.query(sql, function (err, result, fields) {
+    if (result.length > 0) {
+      res.send(result);
+    } else {
+      res.sendStatus(404); 
+    }
+  });
+});
+
 app.post("/users", function (req, res) {
+  if (isValidUserData(req.body)) {
     // kod för att validera input
     if (!req.body.firstname) {
       res.status(400).send("firstname required!");
@@ -80,20 +93,25 @@ app.post("/users", function (req, res) {
       '${req.body.lastname}');
       SELECT LAST_INSERT_ID();`;
         console.log(sql);
-  
-    con.query(sql, function (err, result, fields) {
-      if (err) throw err;
-      // kod för att hantera retur av data
-      // console.log(result);
-      let output = {
-        id: result[0].insertId,
-        firstname: req.body.firstname,
-        lastname: req.body.lastname,
-      };
-      console.log(output);
-      res.send(output);
+        con.query(sql, function (err, result, fields) {
+          if (err) {
+            console.log(err);
+            res.status(500).send("Fel i databasanropet!");
+            throw err;
+          }
+          // hantera retur av data
+          console.log(result);
+          let output = {
+            id: result[0].insertId,
+            username: req.body.firstname,
+            password: req.body.lastname,
+          };
+          res.json(output);
+        });
+      } else {
+        res.status(422).send("username required!"); 
+      }
     });
-  });
 
   app.put("/users/:id", function (req, res) {
     //kod här för att hantera anrop…
@@ -117,3 +135,10 @@ app.post("/users", function (req, res) {
       }
     });
   });
+  function isValidUserData(body) {
+    return body && body.firstname && body.lastname; 
+    /* 
+          - kolla att firstname, lastname och passwd är textsträngar (snarare än tal, fält osv.)
+          - (kolla att userId inte redan är upptaget - eventuellt bättre att kolla detta i samband med att man skriver till databasen genom att göra denna kolumn till key i databastabellen)
+      */
+  }
