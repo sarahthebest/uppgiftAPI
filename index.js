@@ -98,13 +98,9 @@ app.post("/users", function (req, res) {
             throw err;
           }
           let userData = Object.values(JSON.parse(JSON.stringify(result)))[1][0];
-          console.log("Du har skapat användaren: ", userData);
-          let output = {
-            id: result[0].insertId,
-            username: req.body.firstname,
-            password: req.body.lastname,
-          };
-          res.json(output);
+          console.log("Den här användaren har skapats: ", userData);
+          // res.json(200, ("Du har skapat användaren: ", userData));
+          res.status(200).send(("Du har skapat användaren: ", userData)); 
         });
       } else {
         res.status(422).send("username required!"); 
