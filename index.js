@@ -49,7 +49,7 @@ let createCondition = function (query) {
 };
 
 // route-parameter, dvs. filtrera efter ID i URL:en
-app.get("/users/:id", function (req, res) {
+app.get("/users/id=:id", function (req, res) {
   let sql = "SELECT * FROM users WHERE id=" + req.params.id;
   console.log(sql);
   con.query(sql, function (err, result, fields) {
@@ -61,7 +61,7 @@ app.get("/users/:id", function (req, res) {
   });
 });
 
-app.get("/users/:firstname", function (req, res) {
+app.get("/users/firstname=:firstname", function (req, res) {
   let sql = "SELECT * FROM users WHERE firstname=" + req.params.firstname;
   console.log(sql);
   con.query(sql, function (err, result, fields) {
@@ -75,23 +75,21 @@ app.get("/users/:firstname", function (req, res) {
 
 app.post("/users", function (req, res) {
   if (isValidUserData(req.body)) {
-    // kod för att validera input
     if (!req.body.firstname) {
       res.status(400).send("firstname required!");
-      return; // avslutar metoden
+      return; 
     }
     let fields = ["firstname", "lastname"]; 
     for (let key in req.body) {
       if (!fields.includes(key)) {
         res.status(400).send("Unknown field: " + key);
-        return; // avslutar metoden
+        return; 
       }
     }
-    // kod för att hantera anrop
     let sql = `INSERT INTO users (firstname, lastname)
       VALUES ('${req.body.firstname}', 
       '${req.body.lastname}');
-      SELECT LAST_INSERT_ID();`;
+      SELECT * FROM users WHERE id=LAST_INSERT_ID();`;
         console.log(sql);
         con.query(sql, function (err, result, fields) {
           if (err) {
@@ -99,8 +97,8 @@ app.post("/users", function (req, res) {
             res.status(500).send("Fel i databasanropet!");
             throw err;
           }
-          // hantera retur av data
-          console.log(result);
+          let userData = Object.values(JSON.parse(JSON.stringify(result)))[1][0];
+          console.log("Du har skapat användaren: ", userData);
           let output = {
             id: result[0].insertId,
             username: req.body.firstname,
@@ -114,10 +112,8 @@ app.post("/users", function (req, res) {
     });
 
   app.put("/users/:id", function (req, res) {
-    //kod här för att hantera anrop…
-    // kolla först att all data som ska finnas finns i request-body
+  
     if (!(req.body && req.body.firstname && req.body.lastname)) {
-      // om data saknas i body
       res.sendStatus(400);
       return;
     }

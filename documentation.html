@@ -7,11 +7,14 @@
   </head>
   <body>
     <div id="wrap" style="margin-left: 500px;">
-    <h1>Welcome to the documentation...</h1>
+    <h1>Welcome to the documentation... ;)</h1>
     <h2>Routes!</h2>
     <ul>
       <li style="list-style: none;">/users returnerar alla users :)</li>
-      <li style="list-style: none;">/users/[id] returnerar user med matchande id till angiven siffra.</li>
+      <li style="list-style: none;">/users/id={int} , returnerar user med angiven id siffra.</li>
+      <li style="list-style: none;">/users/firstname={string} , returnerar user med angiven namn.</li>
+      <li style="list-style: none;">POST/users postar en user. Följer {"firstname": string , "lastname": string}</li>
+
     </ul>
   </div>
   </body>
